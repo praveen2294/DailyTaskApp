@@ -1,0 +1,455 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f6f5f1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Daymark" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="./icon.svg" />
+  <title>Daymark — Interview Prep</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f6f5f1;
+      --card: #fffefa;
+      --ink: #202922;
+      --muted: #788078;
+      --line: #e8e8df;
+      --green: #315b45;
+      --green-soft: #e9f0e8;
+      --orange: #d87b4b;
+      --orange-soft: #fbede4;
+      --blue: #6687a0;
+      --blue-soft: #edf2f5;
+      --shadow: 0 12px 30px rgba(36, 48, 39, .045);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: -.01em;
+    }
+    button, input, textarea { font: inherit; }
+    button { color: inherit; }
+    .shell { max-width: 1160px; margin: 0 auto; padding: 31px 36px 48px; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 36px; }
+    .brand { display: flex; gap: 11px; align-items: center; }
+    .brand-mark { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 12px; background: var(--green); color: white; }
+    .brand-mark svg { width: 19px; height: 19px; }
+    .brand-name { font-size: 14px; letter-spacing: .09em; font-weight: 750; text-transform: uppercase; }
+    .brand-caption { color: var(--muted); font-size: 12px; margin-top: 3px; }
+    .header-actions { display: flex; gap: 11px; align-items: center; }
+    .local-badge { color: #69736b; font-size: 12px; display: flex; align-items: center; gap: 7px; }
+    .local-badge::before { content: ""; display: block; width: 7px; height: 7px; border-radius: 99px; background: #82a184; }
+    .alert-button { border: 1px solid #dfe2da; background: #fffefa; color: #4e5b50; border-radius: 9px; padding: 8px 11px; font-size: 11px; cursor: pointer; }
+    .alert-button:hover { border-color: #b9c4b7; }
+    .hero { display: grid; grid-template-columns: minmax(0, 1fr) 270px; gap: 32px; align-items: center; border-radius: 22px; padding: 31px 34px; color: #f7f8f3; background: #294b3a; position: relative; overflow: hidden; }
+    .hero::after { content: ""; position: absolute; width: 350px; height: 350px; right: 112px; top: -235px; border: 1px solid rgba(255,255,255,.11); border-radius: 50%; box-shadow: 0 0 0 38px rgba(255,255,255,.025), 0 0 0 78px rgba(255,255,255,.02); pointer-events: none; }
+    .eyebrow { text-transform: uppercase; font-size: 10px; font-weight: 750; letter-spacing: .16em; color: #b9cbbb; }
+    h1 { font-family: Georgia, "Times New Roman", serif; font-size: clamp(30px, 4vw, 43px); line-height: 1.07; font-weight: 500; letter-spacing: -.035em; margin: 11px 0 9px; }
+    .hero-copy { color: #d6dfd7; font-size: 14px; line-height: 1.55; margin: 0; max-width: 580px; }
+    .date-controls { display: flex; gap: 9px; align-items: center; margin-top: 25px; }
+    .date-nav { display: flex; gap: 5px; }
+    .date-nav button, .today-button { border: 1px solid rgba(255,255,255,.22); color: white; background: rgba(255,255,255,.07); border-radius: 9px; cursor: pointer; height: 36px; }
+    .date-nav button { width: 36px; font-size: 18px; }
+    .date-nav button:hover, .today-button:hover { background: rgba(255,255,255,.14); }
+    .date-label { min-width: 164px; color: white; font-size: 13px; font-weight: 650; }
+    .today-button { padding: 0 13px; font-size: 12px; }
+    .progress-box { position: relative; z-index: 1; border-left: 1px solid rgba(255,255,255,.17); padding: 4px 0 4px 28px; }
+    .progress-number { display: flex; align-items: baseline; gap: 7px; font-size: 36px; font-weight: 600; letter-spacing: -.045em; }
+    .progress-number span:last-child { font-size: 13px; font-weight: 450; color: #c1d0c3; letter-spacing: 0; }
+    .progress-label { margin-top: 4px; color: #cad6cb; font-size: 12px; }
+    .progress-track { height: 5px; border-radius: 9px; background: rgba(255,255,255,.19); margin: 17px 0 11px; overflow: hidden; }
+    .progress-fill { height: 100%; width: 0%; background: #e5a078; border-radius: inherit; transition: width .3s ease; }
+    .progress-note { color: #bdcdbf; font-size: 11px; }
+    .section-head { display: flex; align-items: end; justify-content: space-between; margin: 30px 2px 13px; }
+    .section-title { font-size: 17px; font-weight: 720; letter-spacing: -.03em; margin: 0; }
+    .section-subtitle { color: var(--muted); font-size: 12px; margin-top: 5px; }
+    .section-aside { color: var(--muted); font-size: 11px; }
+    .routine-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+    .routine-card { background: var(--card); border: 1px solid var(--line); border-radius: 15px; padding: 17px 19px; box-shadow: var(--shadow); display: grid; grid-template-columns: 41px 1fr auto; gap: 13px; align-items: center; }
+    .routine-icon { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 12px; }
+    .routine-icon svg { width: 19px; height: 19px; }
+    .routine-card.gym .routine-icon { color: var(--orange); background: var(--orange-soft); }
+    .routine-card.work .routine-icon { color: var(--blue); background: var(--blue-soft); }
+    .routine-title { font-weight: 700; font-size: 14px; }
+    .routine-time { margin-top: 4px; font-size: 12px; color: var(--muted); }
+    .routine-done { border: 0; width: 31px; height: 31px; background: transparent; padding: 0; cursor: pointer; }
+    .check { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 7px; border: 1.5px solid #cfd4ca; background: white; color: transparent; transition: .18s ease; }
+    .check svg { width: 14px; height: 14px; }
+    .routine-done:hover .check { border-color: var(--green); }
+    .is-done .check { border-color: var(--green); background: var(--green); color: white; }
+    .routine-card.is-done .routine-title { color: #828a81; text-decoration: line-through; text-decoration-color: #a9b0a7; }
+    .study-head { margin-top: 31px; }
+    .suggestion-pill { color: var(--green); background: var(--green-soft); border-radius: 100px; padding: 7px 10px; font-size: 11px; font-weight: 650; }
+    .study-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 13px; }
+    .study-card { position: relative; background: var(--card); border: 1px solid var(--line); border-radius: 15px; padding: 17px 18px 15px; box-shadow: var(--shadow); min-height: 200px; display: flex; flex-direction: column; }
+    .study-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+    .subject-label { font-size: 9px; text-transform: uppercase; color: var(--muted); letter-spacing: .13em; font-weight: 750; }
+    .subject-time { border-radius: 20px; padding: 5px 8px; color: #737970; background: #f2f2ec; font-size: 10px; white-space: nowrap; }
+    .task-title { font-weight: 730; letter-spacing: -.02em; font-size: 15px; margin-top: 14px; }
+    .task-prompt { color: #737b72; font-size: 11.5px; line-height: 1.48; margin-top: 5px; max-width: 290px; }
+    .timer-footer { margin-top: auto; padding-top: 16px; }
+    .timer-main { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .timer-readout { color: #263a2c; font-variant-numeric: tabular-nums; letter-spacing: -.045em; font-size: 27px; font-weight: 650; }
+    .timer-state { color: #899087; font-size: 10px; margin-top: 2px; }
+    .timer-state.running { color: #52745a; }
+    .timer-state.paused { color: #ad7046; }
+    .timer-state.done { color: #315b45; font-weight: 700; }
+    .timer-actions { display: flex; align-items: center; gap: 7px; }
+    .timer-button { border: 0; border-radius: 9px; padding: 9px 13px; font-size: 11px; font-weight: 680; cursor: pointer; }
+    .timer-button.primary { color: white; background: var(--green); min-width: 77px; }
+    .timer-button.primary:hover { background: #23412f; }
+    .timer-button.secondary { color: #58645a; border: 1px solid #dfe3da; background: #fffefa; }
+    .timer-button.secondary:hover { background: #f5f6f0; }
+    .timer-reset { color: #92978e; background: transparent; border: 0; padding: 6px; font-size: 10px; cursor: pointer; }
+    .timer-reset:hover { color: #855b48; text-decoration: underline; }
+    [hidden] { display: none !important; }
+    .toast { position: fixed; right: 24px; bottom: 24px; z-index: 10; max-width: min(360px, calc(100vw - 32px)); padding: 14px 17px; border-radius: 12px; color: white; background: #294b3a; box-shadow: 0 12px 36px rgba(28,42,32,.22); font-size: 13px; opacity: 0; transform: translateY(10px); pointer-events: none; transition: opacity .2s ease, transform .2s ease; }
+    .toast.visible { opacity: 1; transform: translateY(0); }
+    .card-dsa { border-top: 3px solid #d68a5f; }
+    .card-backend { border-top: 3px solid #66856b; }
+    .card-ai { border-top: 3px solid #728fa5; }
+    .card-system { border-top: 3px solid #b08b57; }
+    .card-lld { border-top: 3px solid #9079a0; }
+    .lower-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(280px, .7fr); gap: 13px; margin-top: 23px; }
+    .panel { background: var(--card); border: 1px solid var(--line); border-radius: 15px; padding: 18px 19px; box-shadow: var(--shadow); }
+    .panel-heading { display: flex; justify-content: space-between; align-items: center; }
+    .panel-title { font-size: 13px; font-weight: 720; margin: 0; }
+    .panel-hint { color: #899087; font-size: 10px; }
+    .note-input { width: 100%; min-height: 64px; border: 0; outline: 0; resize: vertical; background: transparent; color: var(--ink); padding: 13px 0 0; font-size: 12px; line-height: 1.5; }
+    .note-input::placeholder { color: #a3a9a0; }
+    .reset-button { border: 0; background: transparent; color: #8d6656; font-size: 11px; cursor: pointer; padding: 7px 0; }
+    .reset-button:hover { color: #9a4c32; text-decoration: underline; }
+    .footer { display: flex; justify-content: space-between; color: #9a9f96; font-size: 10px; padding: 17px 3px 0; }
+    @media (max-width: 820px) {
+      .shell { padding: 23px 20px 34px; }
+      .hero { grid-template-columns: 1fr; gap: 20px; }
+      .progress-box { border-left: 0; border-top: 1px solid rgba(255,255,255,.17); padding: 17px 0 0; }
+      .study-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .shell { padding: 18px 14px 30px; }
+      .topbar { margin-bottom: 22px; }
+      .header-actions { gap: 8px; }
+      .local-badge { font-size: 0; gap: 0; }
+      .local-badge::before { width: 8px; height: 8px; }
+      .alert-button { padding: 8px; }
+      .hero { padding: 24px 21px; border-radius: 18px; }
+      .date-label { min-width: 135px; font-size: 12px; }
+      .routine-grid { grid-template-columns: 1fr; gap: 9px; }
+      .routine-card { padding: 13px 14px; }
+      .study-grid { grid-template-columns: 1fr; gap: 9px; }
+      .study-card { min-height: 186px; }
+      .section-head { margin-top: 24px; }
+      .lower-grid { grid-template-columns: 1fr; }
+      .footer { gap: 10px; flex-direction: column; }
+      .section-aside { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12.5 9.3 17 19 7" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 3.5a8.5 8.5 0 1 0 8.5 8.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+        <div><div class="brand-name">Daymark</div><div class="brand-caption">Interview prep, one day at a time</div></div>
+      </div>
+      <div class="header-actions"><div class="local-badge">Saved on this device</div><button class="alert-button" id="alertsButton">Enable alerts</button></div>
+    </header>
+
+    <section class="hero" aria-labelledby="headline">
+      <div>
+        <div class="eyebrow">Your daily rhythm</div>
+        <h1 id="headline">Show up. Make progress.</h1>
+        <p class="hero-copy">Keep your routine steady and your interview prep moving. A checked day is progress, not perfection.</p>
+        <div class="date-controls">
+          <div class="date-nav"><button id="prevDay" aria-label="Previous day">‹</button><button id="nextDay" aria-label="Next day">›</button></div>
+          <div class="date-label" id="dateLabel"></div>
+          <button class="today-button" id="todayButton">Today</button>
+        </div>
+      </div>
+      <div class="progress-box" aria-live="polite">
+        <div class="progress-number"><span id="progressCount">0</span><span>/ 6 complete</span></div>
+        <div class="progress-label" id="progressMessage">Start with one small win.</div>
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-note">2 routine check-ins · 4 timed blocks</div>
+      </div>
+    </section>
+
+    <section aria-labelledby="routineTitle">
+      <div class="section-head">
+        <div><h2 class="section-title" id="routineTitle">Your anchors</h2><div class="section-subtitle">The structure around your prep</div></div>
+        <div class="section-aside">Check in when each block is done</div>
+      </div>
+      <div class="routine-grid">
+        <article class="routine-card gym" data-task="gym">
+          <div class="routine-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M6 8v8M3.5 10v4M18 8v8m2.5-6v4M6 12h12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><path d="M8 7h2v10H8zM14 7h2v10h-2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
+          <div><div class="routine-title">Gym</div><div class="routine-time">7:30 AM – 10:00 AM</div></div>
+          <button class="routine-done" aria-label="Mark Gym complete"><span class="check"><svg viewBox="0 0 16 16" fill="none"><path d="m3.5 8.2 3 3.1 6-6.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        </article>
+        <article class="routine-card work" data-task="work">
+          <div class="routine-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="7" width="17" height="13" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7m-11.5 5h17m-10 0v2h3v-2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <div><div class="routine-title">Work</div><div class="routine-time">10:00 AM – 6:00 PM</div></div>
+          <button class="routine-done" aria-label="Mark Work complete"><span class="check"><svg viewBox="0 0 16 16" fill="none"><path d="m3.5 8.2 3 3.1 6-6.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+        </article>
+      </div>
+    </section>
+
+    <section aria-labelledby="studyTitle">
+      <div class="section-head study-head">
+        <div><h2 class="section-title" id="studyTitle">Interview prep</h2><div class="section-subtitle">Four focused blocks, tracked separately</div></div>
+        <div class="suggestion-pill">Daily goal · 5 hours</div>
+      </div>
+      <div class="study-grid">
+        <article class="study-card card-dsa" data-task="dsa">
+          <div class="study-card-top"><div class="subject-label">Problem solving</div><div class="subject-time">90 min</div></div>
+          <div class="task-title">DSA</div><div class="task-prompt">Solve one problem, then write down the pattern and complexity.</div>
+          <div class="timer-footer"><div class="timer-main"><div><div class="timer-readout" id="timer-dsa">01:30:00</div><div class="timer-state" id="state-dsa">Ready</div></div><div class="timer-actions"><button class="timer-button primary" data-timer-action="start" data-timer-id="dsa">Start</button><button class="timer-button primary" data-timer-action="pause" data-timer-id="dsa" hidden>Pause</button><button class="timer-button primary" data-timer-action="resume" data-timer-id="dsa" hidden>Resume</button><button class="timer-button secondary timer-reset" data-timer-action="reset" data-timer-id="dsa" hidden>Reset</button></div></div></div>
+        </article>
+        <article class="study-card card-backend" data-task="backend">
+          <div class="study-card-top"><div class="subject-label">Build & understand</div><div class="subject-time">90 min</div></div>
+          <div class="task-title">Backend</div><div class="task-prompt">Learn one concept or make a small improvement to your project.</div>
+          <div class="timer-footer"><div class="timer-main"><div><div class="timer-readout" id="timer-backend">01:30:00</div><div class="timer-state" id="state-backend">Ready</div></div><div class="timer-actions"><button class="timer-button primary" data-timer-action="start" data-timer-id="backend">Start</button><button class="timer-button primary" data-timer-action="pause" data-timer-id="backend" hidden>Pause</button><button class="timer-button primary" data-timer-action="resume" data-timer-id="backend" hidden>Resume</button><button class="timer-button secondary timer-reset" data-timer-action="reset" data-timer-id="backend" hidden>Reset</button></div></div></div>
+        </article>
+        <article class="study-card card-ai" data-task="ai">
+          <div class="study-card-top"><div class="subject-label">Build with models</div><div class="subject-time">60 min</div></div>
+          <div class="task-title">Applied AI</div><div class="task-prompt">Try one small AI workflow, prompt, or evaluation and note what changed.</div>
+          <div class="timer-footer"><div class="timer-main"><div><div class="timer-readout" id="timer-ai">01:00:00</div><div class="timer-state" id="state-ai">Ready</div></div><div class="timer-actions"><button class="timer-button primary" data-timer-action="start" data-timer-id="ai">Start</button><button class="timer-button primary" data-timer-action="pause" data-timer-id="ai" hidden>Pause</button><button class="timer-button primary" data-timer-id="ai" data-timer-action="resume" hidden>Resume</button><button class="timer-button secondary timer-reset" data-timer-action="reset" data-timer-id="ai" hidden>Reset</button></div></div></div>
+        </article>
+        <article class="study-card card-system" data-task="system">
+          <div class="study-card-top"><div class="subject-label">Architecture</div><div class="subject-time">60 min</div></div>
+          <div class="task-title">System design</div><div class="task-prompt">Sketch one component and capture a key trade-off or bottleneck.</div>
+          <div class="timer-footer"><div class="timer-main"><div><div class="timer-readout" id="timer-system">01:00:00</div><div class="timer-state" id="state-system">Ready</div></div><div class="timer-actions"><button class="timer-button primary" data-timer-action="start" data-timer-id="system">Start</button><button class="timer-button primary" data-timer-action="pause" data-timer-id="system" hidden>Pause</button><button class="timer-button primary" data-timer-action="resume" data-timer-id="system" hidden>Resume</button><button class="timer-button secondary timer-reset" data-timer-action="reset" data-timer-id="system" hidden>Reset</button></div></div></div>
+        </article>
+      </div>
+    </section>
+
+    <div class="lower-grid">
+      <section class="panel" aria-labelledby="notesTitle">
+        <div class="panel-heading"><h2 class="panel-title" id="notesTitle">Today's focus</h2><span class="panel-hint">Saved for this date</span></div>
+        <textarea id="focusNote" class="note-input" placeholder="What is the one thing you want to make progress on today?"></textarea>
+      </section>
+      <section class="panel" aria-labelledby="closeTitle">
+        <div class="panel-heading"><h2 class="panel-title" id="closeTitle">Close the day</h2><span class="panel-hint">A quick reset</span></div>
+        <textarea id="reflectionNote" class="note-input" placeholder="What clicked today? What will you pick up tomorrow?"></textarea>
+      </section>
+    </div>
+    <div class="footer"><span>Your checklist, timers, and notes are stored locally in this browser.</span><button class="reset-button" id="resetButton">Clear this day's checkmarks and notes</button></div>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </main>
+  <script>
+    (() => {
+      const routineTasks = ['gym', 'work'];
+      const studyTasks = ['dsa', 'backend', 'ai', 'system'];
+      const taskCount = routineTasks.length + studyTasks.length;
+      const durations = { dsa: 90 * 60 * 1000, backend: 90 * 60 * 1000, ai: 60 * 60 * 1000, system: 60 * 60 * 1000 };
+      const dateLabel = document.getElementById('dateLabel');
+      const progressCount = document.getElementById('progressCount');
+      const progressFill = document.getElementById('progressFill');
+      const progressMessage = document.getElementById('progressMessage');
+      const focusNote = document.getElementById('focusNote');
+      const reflectionNote = document.getElementById('reflectionNote');
+      const toast = document.getElementById('toast');
+      const alertsButton = document.getElementById('alertsButton');
+      let selectedDate = new Date();
+      let toastTimeout;
+      selectedDate.setHours(0, 0, 0, 0);
+      const pad = value => String(value).padStart(2, '0');
+      const dateKey = date => `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+      const storageKey = date => `daymark-interview-${dateKey(date)}`;
+      const getDayData = () => {
+        try { return JSON.parse(localStorage.getItem(storageKey(selectedDate)) || '{}') || {}; }
+        catch { return {}; }
+      };
+      const saveDayData = data => localStorage.setItem(storageKey(selectedDate), JSON.stringify(data));
+      const ensureTimer = (data, id) => {
+        data.checks ||= {};
+        data.timers ||= {};
+        if (!data.timers[id]) {
+          const completedBeforeTimerUpdate = Boolean(data.checks[id]);
+          data.timers[id] = {
+            status: completedBeforeTimerUpdate ? 'done' : 'idle',
+            remainingMs: completedBeforeTimerUpdate ? 0 : durations[id],
+            endsAt: null
+          };
+          return { timer: data.timers[id], changed: true };
+        }
+        const timer = data.timers[id];
+        if (!['idle', 'running', 'paused', 'done'].includes(timer.status)) timer.status = 'idle';
+        if (!Number.isFinite(timer.remainingMs)) timer.remainingMs = timer.status === 'done' ? 0 : durations[id];
+        if (timer.status === 'done') timer.remainingMs = 0;
+        return { timer, changed: false };
+      };
+      const setNote = (field, value) => {
+        const data = getDayData();
+        data[field] = value;
+        saveDayData(data);
+      };
+      const formatTime = milliseconds => {
+        const totalSeconds = Math.max(0, Math.ceil(milliseconds / 1000));
+        const hours = Math.floor(totalSeconds / 3600);
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        return `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+      };
+      const showToast = message => {
+        toast.textContent = message;
+        toast.classList.add('visible');
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => toast.classList.remove('visible'), 4800);
+      };
+      const notifyCompletion = id => {
+        const names = { dsa: 'DSA', backend: 'Backend', ai: 'Applied AI', system: 'System Design' };
+        const message = `${names[id]} timer complete. Nice work!`;
+        showToast(message);
+        if ('Notification' in window && Notification.permission === 'granted') {
+          try { new Notification(`${names[id]} complete`, { body: 'Your study block is finished.' }); }
+          catch { /* The in-app toast remains available if desktop alerts are unavailable. */ }
+        }
+      };
+      const renderProgress = data => {
+        const checks = data.checks || {};
+        const count = routineTasks.filter(id => Boolean(checks[id])).length + studyTasks.filter(id => data.timers?.[id]?.status === 'done').length;
+        progressCount.textContent = count;
+        progressFill.style.width = `${(count / taskCount) * 100}%`;
+        progressMessage.textContent = count === 0 ? 'Start with one small win.' : count === taskCount ? 'You showed up for every block. Great work.' : `${taskCount - count} more ${taskCount - count === 1 ? 'step' : 'steps'} to complete your day.`;
+      };
+      const syncTimers = () => {
+        const data = getDayData();
+        data.checks ||= {};
+        data.timers ||= {};
+        let changed = false;
+        const completedNow = [];
+        studyTasks.forEach(id => {
+          const result = ensureTimer(data, id);
+          const timer = result.timer;
+          if (result.changed) changed = true;
+          let remaining = timer.remainingMs;
+          if (timer.status === 'running') {
+            remaining = Math.max(0, (Number(timer.endsAt) || Date.now()) - Date.now());
+            if (remaining <= 0) {
+              timer.status = 'done';
+              timer.remainingMs = 0;
+              timer.endsAt = null;
+              data.checks[id] = true;
+              completedNow.push(id);
+              changed = true;
+            }
+          }
+          if (timer.status === 'done') data.checks[id] = true;
+          const readout = document.getElementById(`timer-${id}`);
+          const state = document.getElementById(`state-${id}`);
+          const card = document.querySelector(`[data-task="${id}"]`);
+          const labels = { idle: 'Ready', running: 'Running', paused: 'Paused', done: 'Completed' };
+          readout.textContent = formatTime(timer.status === 'running' ? remaining : timer.remainingMs);
+          state.textContent = labels[timer.status];
+          state.className = `timer-state${timer.status === 'idle' ? '' : ` ${timer.status}`}`;
+          card.classList.toggle('is-done', timer.status === 'done');
+          card.querySelector('[data-timer-action="start"]').hidden = timer.status !== 'idle' && timer.status !== 'done';
+          card.querySelector('[data-timer-action="start"]').textContent = timer.status === 'done' ? 'Done' : 'Start';
+          card.querySelector('[data-timer-action="start"]').disabled = timer.status === 'done';
+          card.querySelector('[data-timer-action="pause"]').hidden = timer.status !== 'running';
+          card.querySelector('[data-timer-action="resume"]').hidden = timer.status !== 'paused';
+          card.querySelector('[data-timer-action="reset"]').hidden = timer.status === 'idle';
+        });
+        if (changed) saveDayData(data);
+        renderProgress(data);
+        completedNow.forEach(notifyCompletion);
+      };
+      const render = () => {
+        dateLabel.textContent = selectedDate.toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+        const data = getDayData();
+        data.checks ||= {};
+        routineTasks.forEach(id => {
+          const card = document.querySelector(`[data-task="${id}"]`);
+          card.classList.toggle('is-done', Boolean(data.checks[id]));
+        });
+        focusNote.value = data.focus || '';
+        reflectionNote.value = data.reflection || '';
+        syncTimers();
+      };
+      const toggleRoutine = id => {
+        const data = getDayData();
+        data.checks ||= {};
+        data.checks[id] = !Boolean(data.checks[id]);
+        saveDayData(data);
+        document.querySelector(`[data-task="${id}"]`).classList.toggle('is-done', data.checks[id]);
+        renderProgress(data);
+      };
+      const changeTimer = (id, action) => {
+        const data = getDayData();
+        const result = ensureTimer(data, id);
+        const timer = result.timer;
+        const now = Date.now();
+        if (action === 'start') {
+          timer.status = 'running';
+          timer.remainingMs = durations[id];
+          timer.endsAt = now + durations[id];
+          data.checks[id] = false;
+        } else if (action === 'pause' && timer.status === 'running') {
+          timer.remainingMs = Math.max(0, (Number(timer.endsAt) || now) - now);
+          timer.status = timer.remainingMs <= 0 ? 'done' : 'paused';
+          timer.endsAt = null;
+          if (timer.status === 'done') data.checks[id] = true;
+        } else if (action === 'resume' && timer.status === 'paused') {
+          timer.status = 'running';
+          timer.endsAt = now + timer.remainingMs;
+        } else if (action === 'reset') {
+          timer.status = 'idle';
+          timer.remainingMs = durations[id];
+          timer.endsAt = null;
+          data.checks[id] = false;
+        }
+        saveDayData(data);
+        syncTimers();
+      };
+      document.querySelectorAll('.routine-done').forEach(button => {
+        button.addEventListener('click', () => toggleRoutine(button.closest('[data-task]').dataset.task));
+      });
+      document.querySelectorAll('[data-timer-action]').forEach(button => {
+        button.addEventListener('click', () => changeTimer(button.dataset.timerId, button.dataset.timerAction));
+      });
+      document.getElementById('prevDay').addEventListener('click', () => { selectedDate.setDate(selectedDate.getDate() - 1); render(); });
+      document.getElementById('nextDay').addEventListener('click', () => { selectedDate.setDate(selectedDate.getDate() + 1); render(); });
+      document.getElementById('todayButton').addEventListener('click', () => { selectedDate = new Date(); selectedDate.setHours(0, 0, 0, 0); render(); });
+      focusNote.addEventListener('input', () => setNote('focus', focusNote.value));
+      reflectionNote.addEventListener('input', () => setNote('reflection', reflectionNote.value));
+      const updateAlertsButton = () => {
+        if (!('Notification' in window)) alertsButton.textContent = 'In-app alerts only';
+        else if (Notification.permission === 'granted') alertsButton.textContent = 'Alerts enabled';
+        else if (Notification.permission === 'denied') alertsButton.textContent = 'Alerts blocked';
+        else alertsButton.textContent = 'Enable alerts';
+      };
+      alertsButton.addEventListener('click', async () => {
+        if (!('Notification' in window)) return showToast('Browser alerts are unavailable here. In-app timer alerts will still appear.');
+        if (Notification.permission === 'denied') return showToast('Browser alerts are blocked in settings. In-app timer alerts will still appear.');
+        if (Notification.permission === 'default') {
+          try { await Notification.requestPermission(); }
+          catch { showToast('Could not enable browser alerts. In-app timer alerts will still appear.'); }
+        }
+        updateAlertsButton();
+        showToast(Notification.permission === 'granted' ? 'Browser alerts enabled.' : 'In-app timer alerts remain enabled.');
+      });
+      document.getElementById('resetButton').addEventListener('click', () => {
+        if (!window.confirm('Clear all checkmarks and notes for this date?')) return;
+        localStorage.removeItem(storageKey(selectedDate));
+        render();
+      });
+      document.addEventListener('visibilitychange', () => { if (!document.hidden) syncTimers(); });
+      setInterval(syncTimers, 1000);
+      updateAlertsButton();
+      render();
+      if ('serviceWorker' in navigator && location.protocol !== 'file:') {
+        window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
+      }
+    })();
+  </script>
+</body>
+</html>
